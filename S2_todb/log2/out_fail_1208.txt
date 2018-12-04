@@ -1,0 +1,41 @@
+sysbench 1.1.0 (using bundled LuaJIT 2.1.0-beta3)
+
+Running the test with following options:
+Number of threads: 20
+Initializing random number generator from current time
+
+Forcing shutdown in 15 seconds
+
+Initializing worker threads...
+
+Threads started!
+
+FATAL: The --max-time limit has expired, forcing shutdown...
+SQL statistics:
+    queries performed:
+        read:                            43017
+        write:                           5585
+        other:                           58
+        total:                           48660
+    transactions:                        13     (0.87 per sec.)
+    queries:                             48660  (3243.98 per sec.)
+    ignored errors:                      17     (1.13 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+Number of unfinished transactions on forced shutdown: 20
+
+Throughput:
+    events/s (eps):                      0.8667
+    time elapsed:                        15.0001s
+    total number of events:              13
+
+Latency (ms):
+         min:                                 4617.02
+         avg:                                 9320.14
+         max:                                14460.58
+         95th percentile:                    13550.80
+         sum:                               121161.77
+
+Threads fairness:
+    events (avg/stddev):           1.6500/0.57
+    execution time (avg/stddev):   6.0581/12.70

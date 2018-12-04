@@ -1,0 +1,62 @@
+###########################
+###    Basic Scripts    ###
+###########################
+
+sysbench: "oltp_read_write.lua"
+
+###########################
+### workload  variables ###
+###########################
+
+# Number of rows per table(10000)
+--table-size: 10, 40000, 200000, 400000, 600000, 800000, 1000000
+
+--tables: 10
+
+# number of threads to use(1)
+--threads: 1, 50, 100
+
+# Number of point SELECT queries per transaction(10)
+--point-selects: 1, 50, 100
+
+# Number of UPDATE index queries per transaction(1)
+--index-updates: <--point-selects>
+
+# Number of DELETE/INSERT combinations per transaction(1)
+--delete-inserts: <--point-selects>
+
+
+# Storage engine, only innodb support transaction(innodb)
+--mysql-storage-engine: innodb
+
+
+# 5M, 10M, 20M, 50M 100M
+--innodb-buffer-pool-size: 5242880, 10485760, 20971520, 52428800, 104857600
+
+# 256kb, 512kb, 1M, 2M, 3M, 6M
+--innodb-log-buffer-size: 262144, 524288, 1048576, 2097152, 3145728, 6291456
+
+
+--innodb-log-file-size: 200M
+--thread-concurrency: 2000
+
+
+###########################
+###       models        ###
+###########################
+
+{--table-size, --threads, --point-selects, --index-updates,  --delete-inserts,  --innodb-buffer-pool-size, --innodb-log-buffer-size} @ 7
+
+###########################
+### workload constrains ###
+###########################
+
+[--point-selects] = [--index-updates];
+[--index-updates] = [--delete-inserts];
+[--point-selects] = [--delete-inserts];
+
+###########################
+###  config constrains  ###
+###########################
+
+

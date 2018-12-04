@@ -1,0 +1,17 @@
+SELECT DISTINCT `--threads`, `--innodb-buffer-pool-size`, `Avg_Latency(ms)` FROM mariadb_perf_test.oltp_read_write_test_5 WHERE 1=1 AND `--innodb-log-buffer-size` = '524288' AND `--table-size` = '1000000'  AND `--point-selects`=1 AND `--index-updates`=1 AND `--delete-inserts`=1
+`--threads`	`--innodb-buffer-pool-size`	`Avg_Latency(ms)`
+50	5242880	117.6
+1	20971520	3.45
+100	5242880	285.39
+1	104857600	2.68
+100	104857600	110.91
+100	20971520	177.64
+50	52428800	63.2
+50	20971520	76.39
+100	52428800	125.31
+100	10485760	222.15
+50	104857600	55.77
+50	10485760	95.27
+1	10485760	3.85
+1	52428800	2.97
+1	5242880	3.9

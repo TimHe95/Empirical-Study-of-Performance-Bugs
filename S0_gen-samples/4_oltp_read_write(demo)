@@ -1,0 +1,225 @@
+###########################
+###    Basic Scripts    ###
+###########################
+
+sysbench: "oltp_read_write.lua"
+
+###########################
+### workload  variables ###
+###########################
+
+# Number of rows per table(10000)
+--table-size: 10, 10000, 20000, 40000, 80000, 160000, 320000, 640000, 1280000
+
+# Number of tables(1)
+--tables: 1, 4, 16
+
+# number of threads to use(1)
+--threads: 1, 5, 10, 20, 50
+
+# Storage engine, only innodb support transaction(innodb)
+--mysql-storage-engine: innodb
+
+# Extra CREATE TABLE options(CHARSET=utf8)()
+# create-table-options:
+
+
+############################################
+# Don't start explicit transactions and execute all queries in the AUTOCOMMIT mode(false)
+--skip-trx: true, false
+
+
+###################### reads ######################
+# Range size for range SELECT queries(100)
+--range-size: 10, 16, 256, 4096, 16396
+
+# Number of point SELECT queries per transaction(10)
+--point-selects: 1, 8, 64, 512
+
+# Number of simple range SELECT queries per transaction(1)
+--simple-ranges: <--point-selects>
+
+# Number of SELECT SUM() queries per transaction(1)
+--sum-ranges: <--point-selects>
+
+# Number of SELECT ORDER BY queries per transaction(1)
+--order-ranges: <--point-selects>
+
+# Number of SELECT DISTINCT queries per transaction(1)
+--distinct-ranges: <--point-selects>
+
+# Enable/disable all range SELECT queries(true)
+--range-selects: true, false
+
+
+
+###################### index ######################
+# Number of UPDATE index queries per transaction(1)
+--index-updates: <--point-selects>
+
+# Number of UPDATE non-index queries per transaction(1)
+--non-index-updates: <--point-selects>
+
+
+
+###################### read&write or write ######################
+# Number of DELETE/INSERT combinations per transaction(1)
+--delete-inserts: <--point-selects>
+
+
+###########################
+###  config  variables  ###
+###########################
+
+# If set to 1, the default, the InnoDB hash index is enabled.
+--innodb-adaptive-hash-index: ON, OFF
+
+
+
+
+# If innodb_buffer_pool_size is set to more than 1GB, innodb_buffer_pool_instances divides the InnoDB buffer pool into this many instances.
+--innodb-buffer-pool-instances: 1, 2, 4, 8
+
+#  InnoDB buffer pool size in bytes. The primary value to adjust on a database server with entirely/primarily XtraDB/InnoDB tables, can be set up to 80% of the total memory in these environments.
+--innodb-buffer-pool-size: 5M, 64M, 512M, 1024M, 4000M
+
+# Specifies whether the buffer pool is automatically warmed up when the server starts by loading the pages held earlier. 
+--innodb-buffer-pool-load-at-startup: ON, OFF
+
+# Maximum size of the XtraDB/InnoDB Change Buffer as a percentage of the total buffer pool.
+--innodb-change-buffer-max-size: 0, 17, 34, 50
+
+# Sets how InnoDB change buffering is performed.
+--innodb-change-buffering: inserts, none, deletes, changes, all
+
+
+
+# specifies how the InnoDB tablespace checksum is generated and verified.
+--innodb-checksum-algorithm: innodb, crc32, none, strict_innodb, strict_crc32, strict_none
+
+
+
+# If set to ON (OFF is default), per-index compression statistics are stored in the xxx table, which are expensive
+--innodb-cmp-per-index-enabled: ON, OFF
+
+# Compression algorithm used on page compression.
+--innodb-compression-algorithm: none, zlib
+
+# The level of zlib compression, from 1 to 9, used with InnoDB compressed tables and indexes.
+--innodb-compression-level: 1, 3, 6, 9
+
+
+
+# Limit to the number of transaction threads that can can commit simultaneously.
+--innodb-commit-concurrency: 1, 2, 10, 20, 100, 1000
+
+# Number of times a newly-entered thread can enter and leave InnoDB until it is again subject to the limitations of innodb_thread_concurrency and may possibly be queued.
+--innodb-concurrency-tickets: 1, 10, 100, 5000, 100000
+
+# Once this number of threads is reached (excluding threads waiting for locks), XtraDB/InnoDB will place new threads in a wait state in a first-in, first-out queue for execution, in order to limit the number of threads running concurrently.
+--innodb-thread-concurrency: <--innodb-commit-concurrency>
+
+# Time in microseconds that XtraDB/InnoDB threads sleep before joining the queue. Setting to 0 disables sleep.
+--innodb-thread-sleep-delay: 1, 10, 1000, 10000, 100000
+
+
+
+# Specifies the default row format to be used for InnoDB tables.
+--innodb-default-row-format: redundant, compact, dynamic
+
+
+
+# When set to 1 (the default is 0), InnoDB defragmentation is enabled.
+--innodb-defragment: ON, OFF
+
+# Indicates how full defragmentation should fill a page.
+--innodb-defragment-fill-factor: 0.7, 0.8, 0.9, 1
+
+# Number of records of space that defragmentation should leave on the page.
+--innodb-defragment-fill-factor-n-recs: 1, 20, 60, 100
+
+#  Maximum times per second for defragmenting a single index.
+--innodb-defragment-frequency: 1, 40, 200, 1000
+
+# Number of pages considered at once when merging multiple pages to defragment. 
+--innodb-defragment-n-pages: 2, 15, 32
+
+# Number of defragment stats changes there are before the stats are written to persistent storage. Defaults to zero, meaning disable defragment stats tracking.
+--innodb-defragment-stats-accuracy: 0, 100, 10000
+
+
+
+# If set to 1 (0 is default), the operating system file system cache for merge-sort temporary files is disabled.
+--innodb-disable-sort-file-cache: ON, OFF
+
+
+
+#  If set to 1, the default, to improve fault tolerance InnoDB first stores data to a doublewrite buffer before writing it to data file.
+--innodb-doublewrite: ON, OFF
+
+
+
+# Enable redo log encryption/decryption. 
+#--innodb-encrypt-log: ON, OFF
+
+# Encrypt all tables in the storage engine.
+#--innodb-encrypt-tables: ON, OFF
+
+
+
+# If set to 1, new XtraDB/InnoDB tables are created with data and indexes stored in their own .ibd file. If set to 0, the default, new tables are created in the system tablespace. 
+--innodb-file-per-table: ON, OFF
+
+
+
+# Percentage of B-tree page filled during bulk insert (sorted index build).
+--innodb-fill-factor: 10, 50, 100
+
+
+
+# Set to 1, along with sync_binlog=1 for the greatest level of fault tolerance. 
+--innodb-flush-log-at-trx-commit: 0, 1, 2, 3
+
+--innodb-flush-method: fsync, O_DSYNC, O_DIRECT, O_DIRECT_NO_FSYNC
+
+
+
+
+# Limit on I/O activity for XtraDB/InnoDB background tasks, including merging data from the insert buffer and flushing pages.
+--innodb-io-capacity: 100, 1000, 10000, 100000
+
+
+--innodb-log-file-size: 200M
+--thread-concurrency: 2000
+
+
+###########################
+###       models        ###
+###########################
+
+{--table-size, --innodb-buffer-pool-instances, --innodb-buffer-pool-size, --innodb-buffer-pool-load-at-startup, --innodb-change-buffer-max-size, --innodb-change-buffering} @ 3
+
+{--table-size, --innodb-flush-log-at-trx-commit, --innodb-flush-method} @ 3
+
+{--innodb-commit-concurrency, --innodb-concurrency-tickets, --innodb-thread-concurrency, --innodb-thread-sleep-delay} @ 3
+
+
+###########################
+### workload constrains ###
+###########################
+
+[--range-size] <= [--table-size];
+
+###########################
+###  config constrains  ###
+###########################
+
+#[--innodb-encrypt-log] = [--innodb-encrypt-tables];
+
+IF [--innodb-compression-algorithm] <> "zlib" THEN [--innodb-compression-level] = 1;
+
+IF [--innodb-buffer-pool-size] <> "4000M" THEN [--innodb-buffer-pool-instances] = 1;
+
+IF [--innodb-change-buffering] = "none" THEN [--innodb-change-buffer-max-size] = 0;
+
+

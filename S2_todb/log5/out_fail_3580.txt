@@ -1,0 +1,43 @@
+sysbench 1.1.0 (using bundled LuaJIT 2.1.0-beta3)
+
+Running the test with following options:
+Number of threads: 100
+Initializing random number generator from current time
+
+Forcing shutdown in 15 seconds
+
+Initializing worker threads...
+
+Threads started!
+
+FATAL: The --max-time limit has expired, forcing shutdown...
+SQL statistics:
+    queries performed:
+        read:                            12235
+        write:                           78023
+        other:                           2595
+        total:                           92853
+    transactions:                        147    (9.80 per sec.)
+    queries:                             92853  (6187.10 per sec.)
+    ignored errors:                      2263   (150.79 per sec.)
+    reconnects:                          0      (0.00 per sec.)
+
+Number of unfinished transactions on forced shutdown: 100
+
+Throughput:
+    events/s (eps):                      9.7951
+    time elapsed:                        15.0075s
+    total number of events:              147
+
+Latency (ms):
+         min:                                  221.88
+         avg:                                 6393.53
+         max:                                14719.49
+         95th percentile:                    13550.80
+         sum:                               939848.99
+
+Threads fairness:
+    events (avg/stddev):           2.4700/0.92
+    execution time (avg/stddev):   9.3985/12.87
+
+DEBUG: Ignoring error 1213 Deadlock found when trying to get lock; try restarting transaction, 
