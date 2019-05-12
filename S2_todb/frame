@@ -1,2 +1,0 @@
---table-size	--tables	--threads	--point-selects	--index-updates	--delete-inserts	--mysql-storage-engine	--innodb-buffer-pool-size	--innodb-log-buffer-size	--innodb-log-file-size	--thread-concurrency
-int	int	int	int	int	int	varchar(20)	int	int	varchar(20)	int

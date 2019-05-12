@@ -1,2 +1,0 @@
---table-size	--tables	--threads	--mysql-storage-engine	--innodb-buffer-pool-size	--innodb-change-buffer-max-size	--innodb-change-buffering	--innodb-log-file-size	--thread-concurrency
-int	int	int	varchar(30)	int	int	enum('inserts', 'none', 'deletes', 'all')	varchar(20)	int
