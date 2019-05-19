@@ -1,0 +1,45 @@
+###########################
+###    Basic Scripts    ###
+###########################
+
+sysbench: "oltp_read_write.lua"
+
+###########################
+### workload  variables ###
+###########################
+
+# Number of rows per table(10000)
+--table-size: 1000000, 2000000, 3000000, 4000000, 5000000, 6000000, 7000000, 8000000, 9000000, 10000000
+
+--tables: 10
+
+# number of threads to use(1)
+--threads: 1, 25, 50, 75, 100, 125, 150, 175, 200
+
+# Storage engine, only innodb support transaction(innodb)
+--mysql-storage-engine: innodb
+
+# 5M, 512M, 1G, 1.5G, 2G, 2.5G, 3G, 4G
+--innodb-buffer-pool-size: 5242880, 536870912, 1073741824, 1610612736, 2147483648, 2684354560, 3221225472, 4294967296
+
+--innodb-log-file-size: 200M
+--thread-concurrency: 2000
+
+
+###########################
+###       models        ###
+###########################
+
+{--table-size, --threads, --innodb-buffer-pool-size} @ 3
+
+###########################
+### workload constrains ###
+###########################
+
+
+
+###########################
+###  config constrains  ###
+###########################
+
+

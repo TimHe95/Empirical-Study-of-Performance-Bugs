@@ -1,0 +1,46 @@
+###########################
+###    Basic Scripts    ###
+###########################
+
+sysbench: "oltp_write_only.lua"
+
+###########################
+### workload  variables ###
+###########################
+
+# Number of rows per table(10000)
+--table-size: 20000, 40000, 60000, 80000, 100000
+
+--tables: 10
+
+# number of threads to use(1)
+--threads: 1, 25, 100, 200
+
+# Storage engine, only innodb support transaction(innodb)
+--mysql-storage-engine: innodb
+
+
+--innodb-flush-method: O_DIRECT, O_DIRECT_NO_FSYNC, fsync, nosync, littlesync
+
+--innodb-log-file-size: 200M
+
+# --thread-concurrency: 2000
+
+
+###########################
+###       models        ###
+###########################
+
+{--table-size, --threads, --innodb-flush-method} @ 3
+
+###########################
+### workload constrains ###
+###########################
+
+
+
+###########################
+###  config constrains  ###
+###########################
+
+

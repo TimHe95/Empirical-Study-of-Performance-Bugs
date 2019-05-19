@@ -1,0 +1,73 @@
+###########################
+###    Basic Scripts    ###
+###########################
+
+sysbench: "add_index.lua"
+
+###########################
+### workload  variables ###
+###########################
+
+# Number of rows per table(10000)
+--table-size: 0, 10000, 20000, 40000, 80000, 160000, 320000, 640000, 1280000
+
+
+# number of threads to use(1)
+--threads: 1, 5, 10, 20, 50
+
+# Storage engine, only innodb support transaction(innodb)
+--mysql-storage-engine: innodb, myisam
+
+--events: 1
+
+--create-secondary: 0
+
+# Extra CREATE TABLE options(CHARSET=utf8)()
+# create-table-options:
+
+
+
+###########################
+###  config  variables  ###
+###########################
+
+# Size of the sort buffers used for sorting data when an InnoDB index is created
+--innodb-sort-buffer-size: 65536, 262144, 524288 ,1048576, 2097152, 3145728
+
+
+# an expensive function
+--innodb-cmp-per-index-enabled: ON, OFF
+
+# 64M
+--innodb-buffer-pool-size: 67108864
+
+
+--innodb-log-file-size: 200M
+--thread-concurrency: 2000
+
+
+
+
+# Size in bytes of the buffer allocated when creating or sorting indexes on a MyISAM table.
+--myisam-sort-buffer-size: 4096, 65536, 262144, 524288 ,1048576, 2097152, 3145728
+
+# Block size to be used for MyISAM index pages.(1024)
+--myisam-block-size: 256, 1024, 2048, 4096
+
+###########################
+###       models        ###
+###########################
+{--table-size, --threads, --mysql-storage-engine, --innodb-sort-buffer-size, --innodb-cmp-per-index-enabled, --myisam-sort-buffer-size, --myisam-block-size} @ 7
+
+###########################
+### workload constrains ###
+###########################
+
+
+###########################
+###  config constrains  ###
+###########################
+
+IF [--mysql-storage-engine]="innodb" THEN ( [--myisam-sort-buffer-size] = 4096 AND [--myisam-block-size] = 1024) ELSE ([--innodb-cmp-per-index-enabled] = "OFF" AND [--innodb-sort-buffer-size] = 1048576);
+
+

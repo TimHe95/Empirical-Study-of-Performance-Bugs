@@ -1,0 +1,48 @@
+###########################
+###    Basic Scripts    ###
+###########################
+
+sysbench: "oltp_read_write.lua"
+
+###########################
+### workload  variables ###
+###########################
+
+# Number of rows per table(10000)
+--table-size: 10, 10000, 20000, 40000, 80000, 160000, 320000, 640000, 1280000
+
+# number of threads to use(1)
+--threads: 1, 5, 10, 20, 50
+
+# Storage engine, only innodb support transaction(innodb)
+--mysql-storage-engine: innodb
+
+# Limit to the number of transaction threads that can can commit simultaneously.
+--innodb-commit-concurrency: 1, 2, 10, 20, 100, 1000
+
+# Number of times a newly-entered thread can enter and leave InnoDB until it is again subject to the limitations of innodb_thread_concurrency and may possibly be queued.
+--innodb-concurrency-tickets: 1, 10, 100, 5000, 100000
+
+# Once this number of threads is reached (excluding threads waiting for locks), XtraDB/InnoDB will place new threads in a wait state in a first-in, first-out queue for execution, in order to limit the number of threads running concurrently.
+--innodb-thread-concurrency: <--innodb-commit-concurrency>
+
+--innodb-log-file-size: 200M
+--thread-concurrency: 2000
+
+
+###########################
+###       models        ###
+###########################
+
+{--table-size, --threads, --mysql-storage-engine, --innodb-commit-concurrency, --innodb-concurrency-tickets, --innodb-thread-concurrency} @ 6
+###########################
+### workload constrains ###
+###########################
+
+
+
+###########################
+###  config constrains  ###
+###########################
+
+
