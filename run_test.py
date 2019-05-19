@@ -5,15 +5,23 @@ import time
 import sys
 import signal
 
+# set to True for newer version of mysql
+v2 = True
+
+
 mariadb_user = 'root'
-mariadb_socket = '/tmp/mysql.sock'
-sysbench_lua_prefix = '/usr/local/share/sysbench/'
+mariadb_socket = '/var/lib/mysql/mysql.sock'
+sysbench_lua_prefix = '/mnt/lua/'
 mariadb_prefix = '/usr/local/mysql/'
-mariadb_sample_result = '../bin/S0/buffer-bottleneck-light-sample.txt' # sample result file
-output_dir = '../bin/S1/buffer-bottleneck-light-run-res'
-wkld_separator = '--innodb' # symbol for the first wkld-param. prefix (no matter parameters after this)
+mariadb_sample_result = '../S0_gen-samples/7_oltp_write_only(INNODB_FLUSH_METHOD)' # sample result file
+output_dir = '../bin/[S1-RES]innodb_flush_method'
+# This directory will include : 
+#	(1) checkpoint file when job not finished and Ctr+C recived.
+#	(2) raw test output printed by sysbench format: "[suc]/[fail]_ID.txt"
+
+wkld_separator = '--innodb' # prefix for the first configuration-parameter in the sample result file (no matter parameters after this)
 test_time = 10 # time to test as expected, but may not as desired.
-wait_time = 10 # time in seconds to wait until the test is over, if unfinished, force it.
+wait_time = 15 # time in seconds to wait until the test is over, if unfinished, force it.
 parameter_stop_words = ['nil', '-1']
 
 SLEEP_INTERVAL = 500 # let system rest for a while each this much samples
@@ -21,15 +29,26 @@ SLEEP_TIME = 10 # seconds each rest last for
 
 RESET_INTERVAL = 100 # let mysql reset all data in /usr/local/bin/mysql/data for limited disk space
 
-shutdown_cmd = '%sbin/mysqladmin shutdown'%mariadb_prefix
-ping_cmd = '%sbin/mysqladmin ping'%mariadb_prefix
-create_db_cmd = '%sbin/mysqladmin create sbtest'%mariadb_prefix
-drop_db_cmd = '%sbin/mysqladmin drop sbtest'%mariadb_prefix
+##### These are stop/init/ping MySQL Server
+shutdown_cmd = '%sbin/mysqladmin shutdown -S%s'%(mariadb_prefix, mariadb_socket)
+ping_cmd = '%sbin/mysqladmin ping -S%s'%(mariadb_prefix, mariadb_socket)
+create_db_cmd = '%sbin/mysqladmin create sbtest -S%s'%(mariadb_prefix, mariadb_socket)
+drop_db_cmd = '%sbin/mysqladmin drop sbtest -S%s'%(mariadb_prefix, mariadb_socket)
 
+##### These commands are made for reinstall db
 clean_mysql_dir_cmd = 'rm -rf %sdata/*'%mariadb_prefix
+clean_mysql_dir_cmd_v2 = 'rm -rf %sdata/*'%mariadb_prefix
 reset_prep_cmd1 = 'mkdir %sdata/mysql'%mariadb_prefix
+reset_prep_cmd1_v2 = ''
 reset_prep_cmd2 = 'mkdir %sdata/test'%mariadb_prefix
+reset_prep_cmd2_v2 = ''
 reset_cmd = '%sscripts/mysql_install_db --user=mysql'%mariadb_prefix
+reset_cmd_v2 = '%sbin/mysql_install_db --user=mysql --basedir=/usr/local/mysql/ --datadir=/usr/local/mysql/data'%mariadb_prefix
+if v2:
+	clean_mysql_dir_cmd = clean_mysql_dir_cmd_v2
+	reset_prep_cmd1 = reset_prep_cmd1_v2
+	reset_prep_cmd2 = reset_prep_cmd2_v2
+	prep_res = prep_res_v2
 #reset_cmd2 = 'chown -R root %s'%mariadb_prefix
 #reset_cmd3 = 'chown -R mysql %sdata'%mariadb_prefix
 
@@ -161,7 +180,7 @@ signal.signal(signal.SIGINT, onsignal_int)
 
 def reset_mysql():
 
-	print ('[%s] Cleaning .../mysql/data dir.'%(time.strftime("%Y-%m-%d %H:%M:%S")))
+	print ('[%s] Cleaning .../mysql/data dir.'%(time.strftime("%Y-%m-%d %H:%M:%S"))	
 	if commands.getstatusoutput(clean_mysql_dir_cmd)[0]==0 : # rm mysql/data/*
 		print ('[%s] Cleaning Done. Reseting.'%(time.strftime("%Y-%m-%d %H:%M:%S")))
 	else:
@@ -221,7 +240,8 @@ def do_start_mysqld(mysqld_cmd):
 
 	ddl = 0
 	next_sample = False
-
+	
+	print(mysqld_cmd)
 	os.system(mysqld_cmd) # start mysqld
 
 	while (commands.getstatusoutput(ping_cmd)[0]): # continously ping until success or time out
