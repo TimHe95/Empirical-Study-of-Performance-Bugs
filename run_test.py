@@ -6,7 +6,8 @@ import sys
 import signal
 
 # set to True for newer version of mysql
-v2 = True
+v2 = False
+v3 = True
 
 
 mariadb_user = 'root'
@@ -14,7 +15,7 @@ mariadb_socket = '/var/lib/mysql/mysql.sock'
 sysbench_lua_prefix = '/mnt/lua/'
 mariadb_prefix = '/usr/local/mysql/'
 mariadb_sample_result = '../S0_gen-samples/7_oltp_write_only(INNODB_FLUSH_METHOD)' # sample result file
-output_dir = '../bin/[S1-RES]innodb_flush_method'
+output_dir = '../bin/[S1-RES]innodb_flush_method(8.0)'
 # This directory will include : 
 #	(1) checkpoint file when job not finished and Ctr+C recived.
 #	(2) raw test output printed by sysbench format: "[suc]/[fail]_ID.txt"
@@ -37,18 +38,24 @@ drop_db_cmd = '%sbin/mysqladmin drop sbtest -S%s'%(mariadb_prefix, mariadb_socke
 
 ##### These commands are made for reinstall db
 clean_mysql_dir_cmd = 'rm -rf %sdata/*'%mariadb_prefix
-clean_mysql_dir_cmd_v2 = 'rm -rf %sdata/*'%mariadb_prefix
+clean_mysql_dir_cmd_v2 = 'rm -rf %sdata'%mariadb_prefix
 reset_prep_cmd1 = 'mkdir %sdata/mysql'%mariadb_prefix
 reset_prep_cmd1_v2 = ''
 reset_prep_cmd2 = 'mkdir %sdata/test'%mariadb_prefix
 reset_prep_cmd2_v2 = ''
 reset_cmd = '%sscripts/mysql_install_db --user=mysql'%mariadb_prefix
 reset_cmd_v2 = '%sbin/mysql_install_db --user=mysql --basedir=/usr/local/mysql/ --datadir=/usr/local/mysql/data'%mariadb_prefix
+reset_cmd_v3 = '%sbin/mysqld --initialize --user=mysql --basedir=/usr/local/mysql/ --datadir=/usr/local/mysql/data'%mariadb_prefix # for MySQL 8.x
 if v2:
 	clean_mysql_dir_cmd = clean_mysql_dir_cmd_v2
 	reset_prep_cmd1 = reset_prep_cmd1_v2
 	reset_prep_cmd2 = reset_prep_cmd2_v2
-	prep_res = prep_res_v2
+	reset_cmd = reset_cmd_v2
+if v3:
+        clean_mysql_dir_cmd = clean_mysql_dir_cmd_v2
+        reset_prep_cmd1 = reset_prep_cmd1_v2
+        reset_prep_cmd2 = reset_prep_cmd2_v2
+        reset_cmd = reset_cmd_v3
 #reset_cmd2 = 'chown -R root %s'%mariadb_prefix
 #reset_cmd3 = 'chown -R mysql %sdata'%mariadb_prefix
 
@@ -180,8 +187,10 @@ signal.signal(signal.SIGINT, onsignal_int)
 
 def reset_mysql():
 
-	print ('[%s] Cleaning .../mysql/data dir.'%(time.strftime("%Y-%m-%d %H:%M:%S"))	
-	if commands.getstatusoutput(clean_mysql_dir_cmd)[0]==0 : # rm mysql/data/*
+	# print ('[%s] Cleaning .../mysql/data dir.'%(time.strftime("%Y-%m-%d %H:%M:%S"))
+	# rm -rf mysql/data/*  |  rm -rf mysql/data
+        err = commands.getstatusoutput(clean_mysql_dir_cmd)
+	if err[0]==0 :
 		print ('[%s] Cleaning Done. Reseting.'%(time.strftime("%Y-%m-%d %H:%M:%S")))
 	else:
 		print ('[%s] Cleaning failed because \'rm data\' failed. Stop.'%(time.strftime("%Y-%m-%d %H:%M:%S")))
@@ -238,7 +247,7 @@ def gen_mysqld_cmd(conf_params):
 
 def do_start_mysqld(mysqld_cmd):
 
-	ddl = 0
+	ttl = 80
 	next_sample = False
 	
 	print(mysqld_cmd)
@@ -246,18 +255,45 @@ def do_start_mysqld(mysqld_cmd):
 
 	while (commands.getstatusoutput(ping_cmd)[0]): # continously ping until success or time out
 		time.sleep(0.1)
-		ddl += 1
-		if ddl > 100:
+		ttl -= 1
+		if ttl == 0:
 			next_sample = True
 			break
-
+	
 	if next_sample == True: # time out handling
+		os.system(mysqld_cmd) # give it one last chance, start mysqld again
+		time.sleep(2)
+		if not commands.getstatusoutput(ping_cmd)[0]:# great! it grab the chance.
+			print ('[%s] mysqld started!(by last chance)'%(time.strftime("%Y-%m-%d %H:%M:%S")))
+			return True
 		print ('[%s] mysqld start timeout, next sample.'%(time.strftime("%Y-%m-%d %H:%M:%S")))
 		return False
 
 	print ('[%s] mysqld started!'%(time.strftime("%Y-%m-%d %H:%M:%S")))
 	return True
 
+
+def do_shutdown_mysqld(shutdown_cmd):
+
+	ttl = 100
+	next_sample = False
+
+        print(shutdown_cmd)
+        os.system(shutdown_cmd) # shutdown mysqld
+
+        while (not commands.getstatusoutput(ping_cmd)[0]): # continously ping until success or time out
+                time.sleep(0.1)
+                ttl -= 1
+                if ttl == 0:
+                        next_sample = True
+                        break
+
+        if next_sample == True: # time out handling
+                print ('[%s] mysqld shutdown timeout, next sample.'%(time.strftime("%Y-%m-%d %H:%M:%S")))
+                return False
+
+        print ('[%s] mysqld shutdown success!'%(time.strftime("%Y-%m-%d %H:%M:%S")))
+        return True
 
 def do_garbage_cleaning():
 
@@ -352,6 +388,10 @@ for mariadb_line in mariadb_body[sample_offset:]: # for each test case
 
 	print ('[%s] Make sure mysqld to shutdown.'%(time.strftime("%Y-%m-%d %H:%M:%S")))
 	commands.getstatusoutput(shutdown_cmd)
+	time.sleep(3)
+	#if not do_shutdown_mysqld(shutdown_cmd):
+	#	failed += 1
+        #        continue
 
     # ------------------------ mysqld starting step ------------------------
 	if not do_start_mysqld(mysqld_cmd):
