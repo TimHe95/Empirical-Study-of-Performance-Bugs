@@ -10,8 +10,8 @@
 
 运行：
 
-`python PerfTest_c-compiler.py <c/c++ compiler name> 
-</dir/to/benchmarks><repeats>`
+`python PerfTest_c-compiler.py <c/c++_compiler_name> 
+</dir/to/benchmarks> <repeats>`
 
 * `<c/c++ compiler name>` gcc g++ clang clang++ 或其他
 * `</dir/to/benchmarks>` benchmark目录
